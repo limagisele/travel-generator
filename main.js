@@ -2,26 +2,7 @@ function randomIndex() {
     return Math.floor(Math.random() * 256)
 }
 
-function getCountry() {
-    return new Promise((resolve, reject) => {
-        fetch("https://travelbriefing.org/countries.json")
-          .then((res) => res.json())
-          .then((data) => {
-            fetch(
-              "https://travelbriefing.org/" +
-              data[randomIndex()].name +
-              "?format=json"
-            )
-              .then((response) => response.json())
-              .then((info) => resolve(displayInfo(info)))
-              .catch(() => reject(new Error("Could not load country info!")))
-        })
-          .catch(() => reject(new Error("Could not retrieve a country!")))
-    })
-}
-
 function displayInfo(info) {
-    console.log(info);
     let country = document.querySelector("#country");
     country.innerText = info.names.name;
     
@@ -73,4 +54,18 @@ function displayInfo(info) {
     }
 }
 
-document.querySelector("button").addEventListener("click", getCountry)
+document.querySelector("button").addEventListener("click", () => {
+  fetch("https://travelbriefing.org/countries.json")
+    .then((res) => res.json())
+    .then((data) => {
+      fetch("https://travelbriefing.org/" + data[randomIndex()].name + "?format=json")
+        .then((response) => response.json())
+        .then((info) => displayInfo(info))
+        .catch(() => {
+          throw "Could not load country info!"
+        })
+        .catch(() => {
+          throw "Could not retrieve a country!"
+        })
+    })
+})
